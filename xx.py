@@ -4,26 +4,23 @@ def print_board(board):
         print("-" * 5)
 
 def check_winner(board):
-    for row in board:
-        if len(set(row)) == 1 and row[0] != ' ':
-            return row[0]
+    # Check rows and columns
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] != ' ':
+            return board[i][0]
+        if board[0][i] == board[1][i] == board[2][i] != ' ':
+            return board[0][i]
 
-    for col in range(3):
-        if board[0][col] == board[1][col] == board[2][col] and board[0][col] != ' ':
-            return board[0][col]
-
-    if board[0][0] == board[1][1] == board[2][2] and board[0][0] != ' ':
+    # Check diagonals
+    if board[0][0] == board[1][1] == board[2][2] != ' ':
         return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] and board[0][2] != ' ':
+    if board[0][2] == board[1][1] == board[2][0] != ' ':
         return board[0][2]
 
     return None
 
 def is_board_full(board):
-    for row in board:
-        if ' ' in row:
-            return False
-    return True
+    return all([cell != ' ' for row in board for cell in row])
 
 def tic_tac_toe():
     board = [[' ' for _ in range(3)] for _ in range(3)]
@@ -31,12 +28,18 @@ def tic_tac_toe():
 
     while True:
         print_board(board)
-        row = int(input(f"Player {current_player}, enter row (0, 1, 2): "))
-        col = int(input(f"Player {current_player}, enter column (0, 1, 2): "))
-
-        if board[row][col] != ' ':
-            print("This position is already taken. Try again.")
-            continue
+        
+        # Input validation
+        while True:
+            try:
+                row = int(input(f"Player {current_player}, enter row (0, 1, 2): "))
+                col = int(input(f"Player {current_player}, enter column (0, 1, 2): "))
+                if 0 <= row <= 2 and 0 <= col <= 2 and board[row][col] == ' ':
+                    break
+                else:
+                    print("Invalid input. Please try again.")
+            except ValueError:
+                print("Invalid input. Please enter integers.")
 
         board[row][col] = current_player
         winner = check_winner(board)
