@@ -4,7 +4,6 @@ def print_board(board):
         print("-" * 5)
 
 def check_winner(board):
-    # Check rows
     for row in board:
         if len(set(row)) == 1 and row[0] != ' ':
             return row[0]
