@@ -1,59 +1,71 @@
-def print_board(board):
-    for row in board:
-        print(" | ".join(row))
-        print("-" * 5)
+class InvalidInputError(Exception):
+    pass
 
-def check_winner(board):
-    # Check rows and columns
-    for i in range(3):
-        if board[i][0] == board[i][1] == board[i][2] != ' ':
-            return board[i][0]
-        if board[0][i] == board[1][i] == board[2][i] != ' ':
-            return board[0][i]
+class TicTacToe:
+    def __init__(self):
+        self.board = [[' ' for _ in range(3)] for _ in range(3)]
+        self.current_player = 'X'
 
-    # Check diagonals
-    if board[0][0] == board[1][1] == board[2][2] != ' ':
-        return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] != ' ':
-        return board[0][2]
+    def print_board(self):
+        for row in self.board:
+            print(" | ".join(row))
+            print("-" * 5)
 
-    return None
+    def check_winner(self):
+        for row in self.board:
+            if len(set(row)) == 1 and row[0] != ' ':
+                return row[0]
 
-def is_board_full(board):
-    return all([cell != ' ' for row in board for cell in row])
+        for col in range(3):
+            if self.board[0][col] == self.board[1][col] == self.board[2][col] and self.board[0][col] != ' ':
+                return self.board[0][col]
 
-def tic_tac_toe():
-    board = [[' ' for _ in range(3)] for _ in range(3)]
-    current_player = 'X'
+        if self.board[0][0] == self.board[1][1] == self.board[2][2] and self.board[0][0] != ' ':
+            return self.board[0][0]
+        if self.board[0][2] == self.board[1][1] == self.board[2][0] and self.board[0][2] != ' ':
+            return self.board[0][2]
 
-    while True:
-        print_board(board)
-        
-        # Input validation
+        return None
+
+    def is_board_full(self):
+        for row in self.board:
+            if ' ' in row:
+                return False
+        return True
+
+    def play(self):
         while True:
+            self.print_board()
             try:
-                row = int(input(f"Player {current_player}, enter row (0, 1, 2): "))
-                col = int(input(f"Player {current_player}, enter column (0, 1, 2): "))
-                if 0 <= row <= 2 and 0 <= col <= 2 and board[row][col] == ' ':
-                    break
-                else:
-                    print("Invalid input. Please try again.")
+                row = int(input(f"Player {self.current_player}, enter row (0, 1, 2): "))
+                col = int(input(f"Player {self.current_player}, enter column (0, 1, 2): "))
+                if row not in range(3) or col not in range(3):
+                    raise InvalidInputError("Row and column values must be between 0 and 2.")
+                if self.board[row][col] != ' ':
+                    raise InvalidInputError("This position is already taken. Try again.")
             except ValueError:
-                print("Invalid input. Please enter integers.")
+                print("Invalid input. Please enter a number.")
+                continue
+            except InvalidInputError as e:
+                print(e)
+                continue
 
-        board[row][col] = current_player
-        winner = check_winner(board)
+            self.board[row][col] = self.current_player
+            winner = self.check_winner()
 
-        if winner:
-            print_board(board)
-            print(f"Player {winner} wins!")
-            break
+            if winner:
+                self.print_board()
+                print(f"Player {winner} wins!")
+                break
 
-        if is_board_full(board):
-            print_board(board)
-            print("It's a tie!")
-            break
+            if self.is_board_full():
+                self.print_board()
+                print("It's a tie!")
+                break
 
-        current_player = 'O' if current_player == 'X' else 'X'
+            self.current_player = 'O' if self.current_player == 'X' else 'X'
 
-tic_tac_toe()
+if __name__ == "__main__":
+    game = TicTacToe()
+    game.play()
+
